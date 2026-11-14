@@ -123,3 +123,9 @@ After that, run:
 
 ```bash
 ls -l README.md
+
+## Project Evidence
+
+The following screenshot shows recorded TCP SYN port-scan detection results from the NIDS testing environment.
+
+![NIDS CSV Alert Logs](evidence/screenshots/nids-csv-logs.png)
