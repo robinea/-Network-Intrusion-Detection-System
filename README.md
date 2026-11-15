@@ -1,29 +1,22 @@
 # Network Intrusion Detection System (NIDS)
 
-## Overview
-
-This project is a lightweight, Python-based Network Intrusion Detection System designed to identify potential TCP SYN port scanning activity.
-
-It monitors network traffic using Scapy, analyzes incoming TCP packets, and generates alerts when a source IP address targets multiple unique ports within a short time window.
+A lightweight, Python-based Network Intrusion Detection System that monitors TCP traffic and detects potential SYN port scans using Scapy.
 
 ## Features
 
-- Real-time network packet monitoring
-- TCP SYN port scan detection
-- Detection based on unique destination ports
-- Configurable detection threshold and time window
-- Console-based security alerts
-- Automatic CSV alert logging
-- Alert cooldown to reduce repeated notifications
+- Captures live network traffic using Scapy.
+- Identifies TCP SYN packets without the ACK flag.
+- Tracks unique destination ports contacted by each source IP.
+- Detects potential port scans using a configurable threshold and time window.
+- Displays alerts in the terminal.
+- Saves detected alerts to a CSV file.
+- Includes an alert cooldown to reduce repeated alerts.
 
-## Technologies Used
+## How It Works
 
-- Python 3.13.12
-- Scapy 2.8.0
-- Kali Linux
-- Ubuntu Server
-- Nmap
-- VirtualBox
+The detector monitors TCP SYN packets. When a source IP contacts 10 or more unique destination ports within 10 seconds, the system generates an alert.
+
+The alert includes the timestamp, source IP address, and destination ports.
 
 ## Project Structure
 
@@ -34,98 +27,72 @@ NIDS/
 ├── .gitignore
 ├── src/
 │   └── detector.py
-├── tests/
 ├── docs/
 │   ├── architecture.md
 │   └── testing.md
 └── evidence/
-    └── alerts.csv
+    ├── alerts.csv
+    └── screenshots/
+        └── nids-csv-logs.png.png
 
-## How It Works
 
-1. Scapy captures TCP packets on the configured network interface.
-2. The detector identifies TCP SYN packets without the ACK flag.
-3. It tracks unique destination ports contacted by each source IP.
-4. An alert is generated when a source IP targets at least 10 unique ports within 10 seconds.
-5. Alerts are displayed in the terminal and saved to a CSV file.
-6. A 10-second cooldown helps prevent repeated alerts for the same source IP.
-
-## Requirements
-
-- Python 3.13 or compatible version
-- Scapy 2.8.0
+Requirements
+- Python 3
+- Scapy
 - Linux environment
 - Root privileges for packet capture
-
-## Installation
-
+Installation
 Clone the repository:
+git clone https://github.com/robinea/-Network-Intrusion-Detection-System.git
+cd -- -Network-Intrusion-Detection-System
 
-```bash
-git clone <your-repository-url>
-cd NIDS
 
-Create a virtual environment:
+Create and activate a virtual environment:
 python3 -m venv venv
 source venv/bin/activate
 
 
-Install dependencies:
+Install the dependencies:
 pip install -r requirements.txt
 
 
 Configuration
-Open src/detector.py and check these settings:
+The detection settings are defined in src/detector.py:
 THRESHOLD = 10TIME_WINDOW = 10ALERT_COOLDOWN = 10INTERFACE = "eth1"
 
 
 
-Change the interface to match your network.
-Usage
+- THRESHOLD: Number of unique destination ports required to trigger an alert.
+- TIME_WINDOW: Time period, in seconds, for tracking port connections.
+- ALERT_COOLDOWN: Minimum time, in seconds, between repeated alerts.
+- INTERFACE: Network interface monitored by the detector.
+Change the interface to match your network setup.
+Running the Detector
+Run the following command from the project directory:
 sudo ./venv/bin/python src/detector.py
 
 
-Press Ctrl + C to stop monitoring.
 Testing
-The system was tested in an isolated VirtualBox environment using Kali Linux as the monitoring machine, Ubuntu Server as the target, and Nmap to generate TCP SYN scan traffic.
+The system was tested in an isolated VirtualBox network using two virtual machines:
+- Kali Linux: 192.168.50.10
+- Ubuntu Server: 192.168.50.20
+An Nmap SYN scan was performed from Kali Linux against the Ubuntu Server:
+sudo nmap -sS -p 1-100 192.168.50.20
 
-Example authorized test:
-sudo nmap -sS -p 1-100 <target-ip>
 
+The detector successfully identified the scan and generated an alert. The alert was also saved to the CSV log file.
 
-Alert Logging
-Alerts are saved in evidence/alerts.csv. Each record includes:
-- Timestamp
-- Source IP address
-- Targeted destination ports
+See Testing Documentation for more details.
+Evidence
+The screenshot below shows detected alerts saved in the CSV log file.
+Documentation
+- System Architecture
+- Testing Documentation
 Limitations
-- Detects TCP SYN port scanning only.
-- Uses threshold-based detection.
-- May produce false positives.
-- Does not inspect packet payloads.
-- Currently configured for a specific network interface.
-- Designed and tested in a controlled virtual lab.
-Future Improvements
-- Support configurable network interfaces.
-- Detect additional suspicious network activities.
-- Improve alert reporting.
-- Expand automated testing.
-Ethical Use
-This project is intended for educational purposes and authorized network monitoring only. Test it only on systems and networks you own or have permission to assess.
-
-**Then save the file:**
-
-1. Press `Ctrl + O`.
-2. Press `Enter`.
-3. Press `Ctrl + X`.
-
-After that, run:
-
-```bash
-ls -l README.md
-
-## Project Evidence
-
-The following screenshot shows recorded TCP SYN port-scan detection results from the NIDS testing environment.
-
-![NIDS CSV Alert Logs](evidence/screenshots/nids-csv-logs.png)
+- Detects potential TCP SYN port scans only.
+- Uses a threshold-based detection method, so false positives are possible.
+- Monitors IPv4 TCP traffic.
+- Does not inspect packet payloads or detect other types of attacks.
+- Requires the correct network interface to be configured.
+Disclaimer
+This project was developed for educational purposes and tested in an isolated virtual lab. Use it only on networks you own or have explicit permission to monitor and test.
