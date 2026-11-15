@@ -34,65 +34,99 @@ NIDS/
     ├── alerts.csv
     └── screenshots/
         └── nids-csv-logs.png.png
+```
 
+## Requirements
 
-Requirements
 - Python 3
 - Scapy
 - Linux environment
 - Root privileges for packet capture
-Installation
+
+## Installation
+
 Clone the repository:
+
+```bash
 git clone https://github.com/robinea/-Network-Intrusion-Detection-System.git
 cd -- -Network-Intrusion-Detection-System
-
+```
 
 Create and activate a virtual environment:
+
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
 
+Install dependencies:
 
-Install the dependencies:
+```bash
 pip install -r requirements.txt
+```
 
+## Configuration
 
-Configuration
-The detection settings are defined in src/detector.py:
-THRESHOLD = 10TIME_WINDOW = 10ALERT_COOLDOWN = 10INTERFACE = "eth1"
+The detection settings are defined in `src/detector.py`:
 
+```python
+THRESHOLD = 10
+TIME_WINDOW = 10
+ALERT_COOLDOWN = 10
+INTERFACE = "eth1"
+```
 
+- `THRESHOLD`: Number of unique destination ports required to trigger an alert.
+- `TIME_WINDOW`: Time period, in seconds, for tracking port connections.
+- `ALERT_COOLDOWN`: Minimum time, in seconds, between repeated alerts.
+- `INTERFACE`: Network interface monitored by the detector.
 
-- THRESHOLD: Number of unique destination ports required to trigger an alert.
-- TIME_WINDOW: Time period, in seconds, for tracking port connections.
-- ALERT_COOLDOWN: Minimum time, in seconds, between repeated alerts.
-- INTERFACE: Network interface monitored by the detector.
 Change the interface to match your network setup.
-Running the Detector
+
+## Running the Detector
+
 Run the following command from the project directory:
+
+```bash
 sudo ./venv/bin/python src/detector.py
+```
 
+## Testing
 
-Testing
 The system was tested in an isolated VirtualBox network using two virtual machines:
-- Kali Linux: 192.168.50.10
-- Ubuntu Server: 192.168.50.20
-An Nmap SYN scan was performed from Kali Linux against the Ubuntu Server:
-sudo nmap -sS -p 1-100 192.168.50.20
 
+- Kali Linux: `192.168.50.10`
+- Ubuntu Server: `192.168.50.20`
+
+An Nmap SYN scan was performed from Kali Linux against the Ubuntu Server:
+
+```bash
+sudo nmap -sS -p 1-100 192.168.50.20
+```
 
 The detector successfully identified the scan and generated an alert. The alert was also saved to the CSV log file.
 
-See Testing Documentation for more details.
-Evidence
+See [Testing Documentation](docs/testing.md) for more details.
+
+## Evidence
+
 The screenshot below shows detected alerts saved in the CSV log file.
-Documentation
-- System Architecture
-- Testing Documentation
-Limitations
+
+![NIDS CSV Alert Logs](evidence/screenshots/nids-csv-logs.png.png)
+
+## Documentation
+
+- [System Architecture](docs/architecture.md)
+- [Testing Documentation](docs/testing.md)
+
+## Limitations
+
 - Detects potential TCP SYN port scans only.
 - Uses a threshold-based detection method, so false positives are possible.
 - Monitors IPv4 TCP traffic.
 - Does not inspect packet payloads or detect other types of attacks.
 - Requires the correct network interface to be configured.
-Disclaimer
+
+## Disclaimer
+
 This project was developed for educational purposes and tested in an isolated virtual lab. Use it only on networks you own or have explicit permission to monitor and test.
